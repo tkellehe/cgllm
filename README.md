@@ -1,9 +1,5 @@
 # Fumble
-Code Golfing LLM
-
-```
-Hello
-```
+Code Golfing LLM language called `fumble`.
 
 <script src="versions/fumble-v0.js"></script>
 
@@ -19,7 +15,7 @@ P?Hlo Wrld
 
 The language figures out through its instructions the meaning of what you could be fumbling through.
 <div class="fumble-v0">
-```
+<pre><code>
 x8@$pP
-```
+</code></pre>
 </div>
