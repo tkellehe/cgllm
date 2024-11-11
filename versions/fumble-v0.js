@@ -276,15 +276,20 @@ Examples:
 
             outputElement.innerHTML = 'fumbling...';
 
+            let isFirstRun = true;
             const code = inputElement.value;
             const output = await fetchStreamingResponse(engine, prompt, code, (text) => {
+                if (isFirstRun) {
+                    outputElement.innerHTML = '';
+                    isFirstRun = false;
+                }
                 outputElement.innerHTML += text;
             });
 
             console.log("Output:", output);
 
             // Extract JavaScript code from the output
-            const cleanedOutput = output.match(/```javascript([\s\S]*?)```/)[1].trim();
+            const cleanedOutput = output.match(/```(?:(?:javascript)|(?:js))?([\s\S]*?)```/)[1].trim();
 
             // Clean out the output element.
             outputElement.innerHTML = '';
