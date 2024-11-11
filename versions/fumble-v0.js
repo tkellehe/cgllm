@@ -129,9 +129,18 @@ Instructions are characters that indicate actions and context that must be trans
 - "#" followed by a number or in context of a number means to assign the context as a number.
 - "+" implies something to be added or concatenated in the context.
 - "-" implies something to be subtracted or removed from the context.
+- "$" implies to generate some kind of number sequence or list through context.
+- "p" implies that the context has something to do with prime numbers.
+- "x" implies that the context has some sort of repeating pattern or fixed loop.
 - "@" import a list of some kind to be constructed from the context.
 - "?" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
-   - \`?Hlo Wrld\` would be translated to \`"Hello World"\`.
+    - \`?Hlo Wrld\` would be translated to \`"Hello World"\`.
+    - \`?Jmp u hre\` would be translated to \`"Jump you here"\`.
+    - It mostly is taking the context and translating it to a string by implying what the typos or shorthand actually means.
+
+Extra rules:
+- If no printing instructions are given in the code, then provide the last context constructed to be the printed using the \`printme\` function.
+- If you need to check if a number is prime, you can use the following function \`isPrime(n)\` which is already defined.
 `;
 
         const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
@@ -140,6 +149,16 @@ Instructions are characters that indicate actions and context that must be trans
 
         window.printme = (text) => {
             outputElement.innerHTML += text;
+        }
+
+        window.isPrime = (n) => {
+            if (n <= 1) return false;
+            if (n <= 3) return true;
+            if (n % 2 === 0 || n % 3 === 0) return false;
+            for (let i = 5; i * i <= n; i += 6) {
+                if (n % i === 0 || n % (i + 2) === 0) return false;
+            }
+            return true;
         }
 
         // Create execute button
