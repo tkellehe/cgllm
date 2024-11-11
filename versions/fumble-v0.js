@@ -113,6 +113,7 @@ Examples:
 - \`p$5\` means grab the 5th prime number in the sequence. Then print at the end because there is no print specified.
 - \`@0+~ thx\` means to add the first argument to the string \`" thanks"\`. Then print at the end because there is no print specified.
 - \`#4-(@#)P\` means to subtract the argument from 4 and print the result.
+- \`@+~6\` means to concat the argument to the string \`"six"\`. Then print at the end because there is no print specified.
 `;
 
     // Find all divs with class "fumble-v0"
