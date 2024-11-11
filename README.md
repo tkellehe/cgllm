@@ -9,7 +9,7 @@ The simplies thing would be the `Hello World` program that uses a guess of what 
 
 <div class="fumble-v0">
 <pre><code>
-P?Hlo Wrld
+P~Hlo Wrld
 </code></pre>
 </div>
 
