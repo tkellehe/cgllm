@@ -83,7 +83,7 @@
     const DEFAULT_MAX_TOKENS = 1000;
 
     // First find all divs with class "cgllm-terminal".
-    const terminals = document.querySelectorAll('.cgllm-v1');
+    const terminals = document.querySelectorAll('.cgllm-v0');
 
     // For each terminal, we are going to create a new terminal inserted in the div.
     terminals.forEach(async (terminalDiv) => {
