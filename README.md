@@ -32,6 +32,16 @@ x8l$pP
 </code></pre>
 </div>
 
+---
+
+Maybe you need to fumble through an equation...
+
+
+<div class="fumble-v0" code="3(#9-@" args="3" collapsed>
+<pre><code>
+3(#9-@
+</code></pre>
+</div>
 
 ---
 ---
