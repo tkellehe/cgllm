@@ -117,7 +117,7 @@
         terminalDiv.appendChild(outputElement);
 
         // Get code from the "code" attribute of the div
-        const code = terminalDiv.getAttribute('code') || 'P?Hlo Wrld';
+        const code = terminalDiv.getAttribute('code') || 'P~Hlo Wrld';
         inputElement.value = code;
 
         const prompt = `You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
@@ -126,16 +126,17 @@ Remember you only need to return the JavaScript code that can be executed in the
 Instructions are characters that indicate actions and context that must be translated into JavaScript code:
 
 - "P" indicates to print something within the context of the code by calling the \`printme\` function.
-- "#" followed by a number or in context of a number means to assign the context as a number.
+- "#" followed by a number or in context of a number means to assign or convert the context as a number.
 - "+" implies something to be added or concatenated in the context.
 - "-" implies something to be subtracted or removed from the context.
 - "$" implies to generate some kind of number sequence or list through context.
 - "p" implies that the context has something to do with prime numbers.
 - "x" implies that the context has some sort of repeating pattern or fixed loop.
 - "@" import a list of some kind to be constructed from the context.
-- "?" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
-    - \`?Hlo Wrld\` would be translated to \`"Hello World"\`.
-    - \`?Jmp u hre\` would be translated to \`"Jump you here"\`.
+- "?" implies to check if the context has some kind of condition or boolean value to branch on or resolve to.
+- "~" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
+    - \`~Hlo Wrld\` would be translated to \`"Hello World"\`.
+    - \`~Jmp u hre\` would be translated to \`"Jump you here"\`.
     - It mostly is taking the context and translating it to a string by implying what the typos or shorthand actually means.
 
 Extra rules:
