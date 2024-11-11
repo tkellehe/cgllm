@@ -147,15 +147,15 @@ Remember you only need to return the JavaScript code that can be executed in the
 Instructions are characters that indicate actions and context that must be translated into JavaScript code:
 
 - "P" indicates to print something within the context of the code by calling the \`printme\` function.
-- "p" implies that the context has something to do with prime numbers.
-- "x" implies that the context has some sort of repeating pattern or fixed loop.
+- "p" implies that the immediate context has something to do with prime numbers.
+- "x" implies that the context has some sort of repeating pattern or fixed loop or the amount within the context.
 - "f" implies that the context should be floored, rounded down, or trimmed based off of the context.
-- "l" implies a list of some kind to be constructed from the context.
+- "l" means that the context represents some kind of list.
 - "@" implies that an argument should be read from the context and used in the code which can be accessed via \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString\`, or \`getArgAsNumber\`.
 - "#" followed by a number or in context of a number means to assign or convert the context as a number.
 - "+" implies something to be added or concatenated in the context.
 - "-" implies something to be subtracted or removed from the context.
-- "$" implies to generate some kind of number sequence or list through context.
+- "$" implies to generate some kind of number or letter sequence of the context it is in.
 - "?" implies to check if the context has some kind of condition or boolean value to branch on or resolve to.
 - "~" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
     - \`~Hlo Wrld\` would be translated to \`"Hello World"\`.
@@ -170,36 +170,6 @@ Extra rules:
         const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
             outputElement.innerHTML = text;
         });
-
-        window.printme = (text) => {
-            outputElement.innerHTML += text;
-        }
-
-        window.isPrime = (n) => {
-            if (n <= 1) return false;
-            if (n <= 3) return true;
-            if (n % 2 === 0 || n % 3 === 0) return false;
-            for (let i = 5; i * i <= n; i += 6) {
-                if (n % i === 0 || n % (i + 2) === 0) return false;
-            }
-            return true;
-        }
-
-        window.getArgs = () => {
-            return args.split(',');
-        }
-
-        window.getArgAt = (n) => {
-            return args.split(',')[n];
-        }
-
-        window.getArgAsString = () => {
-            return args;
-        }
-
-        window.getArgAsNumber = () => {
-            return Number(args);
-        }
 
         // Create execute button
         const executeButton = document.createElement('button');
@@ -218,6 +188,36 @@ Extra rules:
 
         // Function to execute the code
         async function executeCode() {
+            window.printme = (text) => {
+                outputElement.innerHTML += text;
+            }
+    
+            window.isPrime = (n) => {
+                if (n <= 1) return false;
+                if (n <= 3) return true;
+                if (n % 2 === 0 || n % 3 === 0) return false;
+                for (let i = 5; i * i <= n; i += 6) {
+                    if (n % i === 0 || n % (i + 2) === 0) return false;
+                }
+                return true;
+            }
+    
+            window.getArgs = () => {
+                return args.split(',');
+            }
+    
+            window.getArgAt = (n) => {
+                return args.split(',')[n];
+            }
+    
+            window.getArgAsString = () => {
+                return args;
+            }
+    
+            window.getArgAsNumber = () => {
+                return Number(args);
+            }
+
             outputElement.innerHTML = 'loading...';
 
             const code = inputElement.value;
