@@ -63,6 +63,10 @@
     const DEFAULT_TOP_P = 1;
     const DEFAULT_MAX_TOKENS = 1000;
 
+    const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
+        outputElement.innerHTML = text;
+    });
+
     // Find all divs with class "fumble-v0"
     const terminalDivs = document.querySelectorAll('.fumble-v0');
 
@@ -182,10 +186,6 @@ Extra rules:
 Examples:
 - \`Plx100$p\` means to print the list of the first 100 prime numbers in the sequence.
 `;
-
-        const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
-            outputElement.innerHTML = text;
-        });
 
         // Create execute button
         const executeButton = document.createElement('button');
