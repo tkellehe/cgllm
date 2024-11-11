@@ -140,7 +140,7 @@ Examples:
             color: white;
             cursor: pointer;
             margin-right: 10px;
-            transform: rotate(0deg);
+            transform: rotate(90deg);
             transition: transform 0.3s ease;
         `;
         
@@ -301,14 +301,14 @@ Examples:
         triangle.addEventListener('click', () => {
             isCollapsed = !isCollapsed;
             if (isCollapsed) {
-                triangle.style.transform = 'rotate(90deg)'; // Down-pointing triangle
+                triangle.style.transform = 'rotate(0deg)'; // Down-pointing triangle
                 collapsibleContainer.style.maxHeight = '0';
                 collapsibleContainer.style.opacity = '0';
                 setTimeout(() => {
                     collapsibleContainer.style.display = 'none';
                 }, 300); // Match the transition duration
             } else {
-                triangle.style.transform = 'rotate(0deg)'; // Right-pointing triangle
+                triangle.style.transform = 'rotate(90deg)'; // Right-pointing triangle
                 collapsibleContainer.style.display = 'block';
                 setTimeout(() => {
                     collapsibleContainer.style.maxHeight = '500px'; // Adjust as needed
@@ -320,7 +320,7 @@ Examples:
         // If the attribute "collapsed" is present, collapse the terminal by default.
         if (terminalDiv.hasAttribute('collapsed')) {
             isCollapsed = true;
-            triangle.style.transform = 'rotate(90deg)'; // Down-pointing triangle
+            triangle.style.transform = 'rotate(0deg)'; // Down-pointing triangle
             collapsibleContainer.style.maxHeight = '0';
             collapsibleContainer.style.opacity = '0';
             collapsibleContainer.style.display = 'none';
