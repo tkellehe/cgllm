@@ -79,6 +79,8 @@ Instructions are characters that indicate actions and context that must be trans
 - "#" followed by a number or in context of a number means to assign or convert the context as a number.
 - "+" implies something to be added or concatenated in the context.
 - "-" implies something to be subtracted or removed from the context.
+- "*" implies something to be multiplied or repeated in the context.
+- "/" implies something to be divided or split in the context.
 - "$" implies to generate some kind of number or letter sequence of the context it is in.
 - "?" implies to check if the context has some kind of condition or boolean value to branch on or resolve to.
 - "~" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
