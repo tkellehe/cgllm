@@ -59,6 +59,7 @@
     }
 
     const DEFAULT_MODEL = "Qwen2.5-Coder-7B-Instruct-q4f32_1-MLC";
+    // const DEFAULT_MODEL = "Qwen2.5-Coder-1.5B-Instruct-q4f32_1-MLC";
     const DEFAULT_TEMPERATURE = 0.1;
     const DEFAULT_TOP_P = 1;
     const DEFAULT_MAX_TOKENS = 4000;
@@ -68,7 +69,8 @@ Remember you only need to return the JavaScript code that can be executed in the
 
 Instructions are characters that indicate actions and context that must be translated into JavaScript code:
 
-- "P" indicates to print something within the context of the code by calling the \`printme\` function.
+- "P" indicates to print something within the context of the code by calling the \`print\` function.
+- "c" indicates to clear the output using the \`clear\` function and potentially resetting or printing something else using the \`print\` function.
 - "p" implies that the context has something to do with prime numbers.
 - "x" implies that the context has some sort of repeating pattern or unfolding within the context. Typically used to loop a fixed amount of times.
 - "f" implies that the context should be floored, rounded down, or trimmed based off of the context.
@@ -84,25 +86,33 @@ Instructions are characters that indicate actions and context that must be trans
 - \`~Jmp u hre\` would be translated to \`"Jump you here"\`.
 - It mostly is taking the context and translating it to a string by implying what the typos or shorthand actually means.
 - You can also use the existing logic and context to use it to expand the ideas or commands.
+- Always preserve order of inferred context from left to right and ensure the code is complete and can be executed in the browser.
 
 Extra rules:
-- If no printing instructions are given in the code, then provide the last context constructed to be the printed using the \`printme\` function.
+- If no printing instructions are given in the code, then provide the last context constructed to be the printed using the \`print\` function.
+- If you need to clear the output, you can use the following function \`clear()\`.
 - If you need to check if a number is prime, you can use the following function \`isPrime(n)\` which is already defined.
 - If you need to access the arguments, you can use the following functions:
 - \`getArgs()\` to get all the arguments as an array.
 - \`getArgAt(n)\` to get the argument at index \`n\`.
 - \`getArgAsString()\` to get the arguments as a single string.
 - \`getArgAsNumber()\` to get the arguments as a single number.
-- You can use the global function \`printme\` to print text to the output.
+- You can use the global function \`print\` to print text to the output.
 - Always consider the whole context of a program and ensure no code or instructions are left out.
 - Grouping \`p\` and \`?\` within the same context implies part of the program is testing primality.
 - Grouping \`@\` and \`?\` within the same context implies part of the program is checking something with arguments or switching on something with arguments.
 - Grouping \`p\` and \`$\` within the same context implies part of the program has to do with the sequence or a walk of the primes.
 - Grouping \`$\` and \`l\` within the same context implies part of the program has to do with constructing a list of a sequence.
 - Grouping \`$\` and \`x\` within the same context implies part of the program is extending the sequence or iterating it out.
+- Grouping \`@\` and \`#\` within the same context implies part of the program is converting or assigning a number from the arguments.
 
 Examples:
 - \`Plx100$p\` means to print the list of the first 100 prime numbers in the sequence.
+- \`#@+4\` means to add the argument to 4 infering the argument is a number. Then print at the end because there is no print specified.
+- \`~Hdy '@'!\` means to construct the string \`"Howdy '...'!"\` and where '...' is the arguments as a string. Then print at the end because there is no print specified.
+- \`p$5\` means grab the 5th prime number in the sequence. Then print at the end because there is no print specified.
+- \`@0+~ thx\` means to add the first argument to the string \`" thanks"\`. Then print at the end because there is no print specified.
+- \`#4-(@#)P\` means to subtract the argument from 4 and print the result.
 `;
 
     // Find all divs with class "fumble-v0"
@@ -240,12 +250,18 @@ Examples:
 
         // Function to execute the code
         async function executeCode() {
+            const args = argumentElement.value;
+
             const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
                 outputElement.innerHTML = text;
             });
 
-            window.printme = (text) => {
+            window.print = (text) => {
                 outputElement.innerHTML += text;
+            }
+
+            window.clear = () => {
+                outputElement.innerHTML = '';
             }
     
             window.isPrime = (n) => {
