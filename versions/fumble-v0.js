@@ -1,6 +1,6 @@
 (async () => {
     // Function to initialize and get the engine
-    async function initializeEngine(model, temperature = 0.8, top_p = 1, max_tokens = 300, onLoadingCallback) {
+    async function initializeEngine(model, temperature, top_p, max_tokens, onLoadingCallback) {
         const engineName = `${model}-${temperature}-${top_p}-${max_tokens}`;
         if (window[engineName]) {
             return window[engineName];
@@ -61,7 +61,7 @@
     const DEFAULT_MODEL = "Qwen2.5-Coder-7B-Instruct-q4f32_1-MLC";
     const DEFAULT_TEMPERATURE = 0.1;
     const DEFAULT_TOP_P = 1;
-    const DEFAULT_MAX_TOKENS = 1000;
+    const DEFAULT_MAX_TOKENS = 4000;
 
     const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
         outputElement.innerHTML = text;
