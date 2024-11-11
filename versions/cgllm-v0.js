@@ -76,16 +76,20 @@
         return fullReply;
     }
 
-    const DEFAULT_MODEL = "TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC";
+    const DEFAULT_MODEL = "Qwen2.5-Coder-7B-Instruct-q4f32_1-MLC";
+    // const DEFAULT_MODEL = "TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC";
     const DEFAULT_TEMPERATURE = 0.1;
     const DEFAULT_TOP_P = 1;
     const DEFAULT_MAX_TOKENS = 1000;
 
     // First find all divs with class "cgllm-terminal".
-    const terminals = document.querySelectorAll('.cgllm-terminal');
+    const terminals = document.querySelectorAll('.cgllm-v1');
 
     // For each terminal, we are going to create a new terminal inserted in the div.
-    for(const terminalDiv in terminals) {
+    terminals.forEach(async (terminalDiv) => {
+        // Clear out the div.
+        terminalDiv.innerHTML = '';
+
         // Create a simple input field with monospace font, border, and padding, white text on black background.
         const inputElement = document.createElement('input');
         inputElement.style.fontFamily = 'monospace';
@@ -128,14 +132,11 @@
         terminalDiv.appendChild(outputElement);
 
         // Pull the code from the "code" attribute of the div.
-        const code = terminalDiv.getAttribute('code');
+        const code = terminalDiv.getAttribute('code') || 'P?Hlo Wrld';
         // Put the code into the input field if there is one.
-        if (code) {
-            inputElement.value = code;
-        }
+        inputElement.value = code;
 
-        const prompt = `
-You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
+        const prompt = `You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
 Remember you only need to return the JavaScript code that can be executed in the browser.
 
 Instructions are characters that indicate actions and context that must be transalated into JavaScript code:
@@ -145,20 +146,41 @@ Instructions are characters that indicate actions and context that must be trans
 - "+" implies something to be added or concatenated in the context.
 - "-" implies something to be subtracted or removed from the context.
 - "@" import a list of some kind to be constructed from the context.
-- "?" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context.`
-
+- "?" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
+   - \`?Hlo Wrld\` would be translated to \`"Hello World"\`.
+`
         const ENGINE = await getEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
             outputElement.innerHTML = text;
         });
 
-        const printme = (text) => {
+        window.printme = (text) => {
             outputElement.innerHTML += text;
         }
 
-        const output = await getStreamingResponse(ENGINE, prompt, code, (text) => {
-            outputElement.innerHTML += text;
-        });
+        // Add a button to execute the code.
+        const executeButton = document.createElement('button');
+        executeButton.innerHTML = 'Execute';
+        terminalDiv.appendChild(executeButton);
 
-        console.log(output);
-    }
+        async function executeCode() {
+            const code = inputElement.value;
+            const output = await getStreamingResponse(ENGINE, prompt, code, (text) => {
+                outputElement.innerHTML += text;
+            });
+
+            console.log(output);
+
+            // Clean up the output using a regular expression to extract the JavaScript code.
+            const cleanedOutput = output.match(/```javascript([\s\S]*?)```/)[1].trim();
+
+            // Clean out the output element.
+            outputElement.innerHTML = '';
+
+            // Execute the cleaned JavaScript code.
+            eval(cleanedOutput);
+        }
+
+        // Add an event listener to the button.
+        executeButton.addEventListener('click', executeCode);
+    });
 })()
