@@ -1,7 +1,6 @@
 # Fumble
 Code Golfing LLM language called `fumble`.
 
-<script src="versions/fumble-v0.js"></script>
 
 ---
 
@@ -19,3 +18,10 @@ The language figures out through its instructions the meaning of what you could 
 x8@$pP
 </code></pre>
 </div>
+
+
+---
+---
+
+
+<script src="versions/fumble-v0.js"></script>
