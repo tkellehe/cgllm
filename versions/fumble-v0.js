@@ -69,26 +69,29 @@
     // Create a terminal in each div
     terminalDivs.forEach(async (terminalDiv) => {
         terminalDiv.innerHTML = '';
+        terminalDiv.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #2c2c54;
+        `;
 
         // Create input field
         const inputElement = document.createElement('input');
         inputElement.style.cssText = `
             font-family: monospace;
-            border: 1px solid black;
-            padding: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
             color: white;
             background-color: black;
             width: 100%;
             box-sizing: border-box;
-            margin: 0;
-            display: block;
-            overflow: auto;
-            height: 100px;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            resize: both;
+            margin: 10px 0;
+            border-radius: 10px;
             outline: none;
         `;
         inputElement.placeholder = "Type here...";
@@ -98,18 +101,16 @@
         const outputElement = document.createElement('div');
         outputElement.style.cssText = `
             font-family: monospace;
-            border: 1px solid black;
-            padding: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
             color: white;
             background-color: black;
             width: 100%;
             box-sizing: border-box;
-            margin: 0;
-            display: block;
-            overflow: auto;
+            margin: 10px 0;
+            border-radius: 10px;
             height: 200px;
             overflow-y: scroll;
-            overflow-x: hidden;
             white-space: pre-wrap;
             word-wrap: break-word;
         `;
@@ -144,10 +145,22 @@ Instructions are characters that indicate actions and context that must be trans
         // Create execute button
         const executeButton = document.createElement('button');
         executeButton.innerHTML = 'Execute';
+        executeButton.style.cssText = `
+            font-family: monospace;
+            border: 1px solid white;
+            padding: 10px 20px;
+            color: white;
+            background-color: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        `;
         terminalDiv.appendChild(executeButton);
 
         // Function to execute the code
         async function executeCode() {
+            outputElement.innerHTML = 'loading...';
+
             const code = inputElement.value;
             const output = await fetchStreamingResponse(engine, prompt, code, (text) => {
                 outputElement.innerHTML += text;
@@ -156,4 +169,16 @@ Instructions are characters that indicate actions and context that must be trans
             console.log("Output:", output);
 
             // Extract JavaScript code from the output
-            const cleanedOutput = output.match(/
+            const cleanedOutput = output.match(/```javascript([\s\S]*?)```/)[1].trim();
+
+            // Clean out the output element.
+            outputElement.innerHTML = '';
+
+            // Execute the cleaned JavaScript code.
+            eval(cleanedOutput);
+        }
+
+        // Add an event listener to the button.
+        executeButton.addEventListener('click', executeCode);
+    });
+})()
