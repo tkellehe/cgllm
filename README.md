@@ -1,5 +1,5 @@
 # Fumble
-Code Golfing LLM language called `fumble`.
+Code Golfing LLM language called `fumble`. It is powered in the browser through [WebLLM](https://webllm.mlc.ai).
 
 
 ---
