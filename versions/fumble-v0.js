@@ -63,6 +63,48 @@
     const DEFAULT_TOP_P = 1;
     const DEFAULT_MAX_TOKENS = 4000;
 
+    const prompt = `You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
+Remember you only need to return the JavaScript code that can be executed in the browser.
+
+Instructions are characters that indicate actions and context that must be translated into JavaScript code:
+
+- "P" indicates to print something within the context of the code by calling the \`printme\` function.
+- "p" implies that the context has something to do with prime numbers.
+- "x" implies that the context has some sort of repeating pattern or unfolding within the context. Typically used to loop a fixed amount of times.
+- "f" implies that the context should be floored, rounded down, or trimmed based off of the context.
+- "l" implies that the context represents some kind of list within the overall code.
+- "@" implies that an argument should be read from the context and used in the code which can be accessed via \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString\`, or \`getArgAsNumber\`.
+- "#" followed by a number or in context of a number means to assign or convert the context as a number.
+- "+" implies something to be added or concatenated in the context.
+- "-" implies something to be subtracted or removed from the context.
+- "$" implies to generate some kind of number or letter sequence of the context it is in.
+- "?" implies to check if the context has some kind of condition or boolean value to branch on or resolve to.
+- "~" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
+- \`~Hlo Wrld\` would be translated to \`"Hello World"\`.
+- \`~Jmp u hre\` would be translated to \`"Jump you here"\`.
+- It mostly is taking the context and translating it to a string by implying what the typos or shorthand actually means.
+- You can also use the existing logic and context to use it to expand the ideas or commands.
+
+Extra rules:
+- If no printing instructions are given in the code, then provide the last context constructed to be the printed using the \`printme\` function.
+- If you need to check if a number is prime, you can use the following function \`isPrime(n)\` which is already defined.
+- If you need to access the arguments, you can use the following functions:
+- \`getArgs()\` to get all the arguments as an array.
+- \`getArgAt(n)\` to get the argument at index \`n\`.
+- \`getArgAsString()\` to get the arguments as a single string.
+- \`getArgAsNumber()\` to get the arguments as a single number.
+- You can use the global function \`printme\` to print text to the output.
+- Always consider the whole context of a program and ensure no code or instructions are left out.
+- Grouping \`p\` and \`?\` within the same context implies part of the program is testing primality.
+- Grouping \`@\` and \`?\` within the same context implies part of the program is checking something with arguments or switching on something with arguments.
+- Grouping \`p\` and \`$\` within the same context implies part of the program has to do with the sequence or a walk of the primes.
+- Grouping \`$\` and \`l\` within the same context implies part of the program has to do with constructing a list of a sequence.
+- Grouping \`$\` and \`x\` within the same context implies part of the program is extending the sequence or iterating it out.
+
+Examples:
+- \`Plx100$p\` means to print the list of the first 100 prime numbers in the sequence.
+`;
+
     // Find all divs with class "fumble-v0"
     const terminalDivs = document.querySelectorAll('.fumble-v0');
 
@@ -80,6 +122,31 @@
             background-color: #2c2c54;
         `;
 
+        // Create input field and triangle div
+        const inputSectionDiv = document.createElement('div');
+        inputSectionDiv.style.cssText = `
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        `;
+
+        // Create collapsible triangle
+        const triangle = document.createElement('div');
+        triangle.innerHTML = '&#9654;'; // Right-pointing triangle
+        triangle.style.cssText = `
+            font-family: monospace;
+            color: white;
+            cursor: pointer;
+            margin-right: 10px;
+            transform: rotate(0deg);
+            transition: transform 0.3s ease;
+        `;
+        
+        // Add the triangle just before the input element.
+        inputSectionDiv.appendChild(triangle);
+
         // Create input field
         const inputElement = document.createElement('input');
         inputElement.style.cssText = `
@@ -95,7 +162,19 @@
             outline: none;
         `;
         inputElement.placeholder = "Type here...";
-        terminalDiv.appendChild(inputElement);
+        inputSectionDiv.appendChild(inputElement);
+
+        // Add the input section div just before the output element.
+        terminalDiv.appendChild(inputSectionDiv);
+
+        // Create a container div for the elements to be collapsed
+        const collapsibleContainer = document.createElement('div');
+        collapsibleContainer.style.cssText = `
+            width: 100%;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            overflow: hidden;
+            max-height: 500px; /* Adjust as needed */
+        `;
 
         // Create argument input field
         const argumentElement = document.createElement('input');
@@ -112,7 +191,7 @@
             outline: none;
         `;
         argumentElement.placeholder = "Arguments...";
-        terminalDiv.appendChild(argumentElement);
+        collapsibleContainer.appendChild(argumentElement);
 
         // Create output display div
         const outputElement = document.createElement('div');
@@ -131,7 +210,7 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         `;
-        terminalDiv.appendChild(outputElement);
+        collapsibleContainer.appendChild(outputElement);
 
         // Get code from the "code" attribute of the div
         const code = terminalDiv.getAttribute('code') || 'P~Hlo Wrld';
@@ -140,48 +219,6 @@
         // Get the argument from the "args" attribute of the div
         const args = terminalDiv.getAttribute('args') || '';
         argumentElement.value = args;
-
-        const prompt = `You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
-Remember you only need to return the JavaScript code that can be executed in the browser.
-
-Instructions are characters that indicate actions and context that must be translated into JavaScript code:
-
-- "P" indicates to print something within the context of the code by calling the \`printme\` function.
-- "p" implies that the context has something to do with prime numbers.
-- "x" implies that the context has some sort of repeating pattern or unfolding within the context. Typically used to loop a fixed amount of times.
-- "f" implies that the context should be floored, rounded down, or trimmed based off of the context.
-- "l" implies that the context represents some kind of list within the overall code.
-- "@" implies that an argument should be read from the context and used in the code which can be accessed via \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString\`, or \`getArgAsNumber\`.
-- "#" followed by a number or in context of a number means to assign or convert the context as a number.
-- "+" implies something to be added or concatenated in the context.
-- "-" implies something to be subtracted or removed from the context.
-- "$" implies to generate some kind of number or letter sequence of the context it is in.
-- "?" implies to check if the context has some kind of condition or boolean value to branch on or resolve to.
-- "~" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
-    - \`~Hlo Wrld\` would be translated to \`"Hello World"\`.
-    - \`~Jmp u hre\` would be translated to \`"Jump you here"\`.
-    - It mostly is taking the context and translating it to a string by implying what the typos or shorthand actually means.
-    - You can also use the existing logic and context to use it to expand the ideas or commands.
-
-Extra rules:
-- If no printing instructions are given in the code, then provide the last context constructed to be the printed using the \`printme\` function.
-- If you need to check if a number is prime, you can use the following function \`isPrime(n)\` which is already defined.
-- If you need to access the arguments, you can use the following functions:
-    - \`getArgs()\` to get all the arguments as an array.
-    - \`getArgAt(n)\` to get the argument at index \`n\`.
-    - \`getArgAsString()\` to get the arguments as a single string.
-    - \`getArgAsNumber()\` to get the arguments as a single number.
-- You can use the global function \`printme\` to print text to the output.
-- Always consider the whole context of a program and ensure no code or instructions are left out.
-- Grouping \`p\` and \`?\` within the same context implies part of the program is testing primality.
-- Grouping \`@\` and \`?\` within the same context implies part of the program is checking something with arguments or switching on something with arguments.
-- Grouping \`p\` and \`$\` within the same context implies part of the program has to do with the sequence or a walk of the primes.
-- Grouping \`$\` and \`l\` within the same context implies part of the program has to do with constructing a list of a sequence.
-- Grouping \`$\` and \`x\` within the same context implies part of the program is extending the sequence or iterating it out.
-
-Examples:
-- \`Plx100$p\` means to print the list of the first 100 prime numbers in the sequence.
-`;
 
         // Create execute button
         const executeButton = document.createElement('button');
@@ -196,7 +233,10 @@ Examples:
             cursor: pointer;
             margin-top: 10px;
         `;
-        terminalDiv.appendChild(executeButton);
+        collapsibleContainer.appendChild(executeButton);
+
+        // Add the collapsible container to the terminal div
+        terminalDiv.appendChild(collapsibleContainer);
 
         // Function to execute the code
         async function executeCode() {
@@ -255,5 +295,35 @@ Examples:
 
         // Add an event listener to the button.
         executeButton.addEventListener('click', executeCode);
+
+        // Toggle visibility of arguments and output elements
+        let isCollapsed = false;
+        triangle.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            if (isCollapsed) {
+                triangle.style.transform = 'rotate(90deg)'; // Down-pointing triangle
+                collapsibleContainer.style.maxHeight = '0';
+                collapsibleContainer.style.opacity = '0';
+                setTimeout(() => {
+                    collapsibleContainer.style.display = 'none';
+                }, 300); // Match the transition duration
+            } else {
+                triangle.style.transform = 'rotate(0deg)'; // Right-pointing triangle
+                collapsibleContainer.style.display = 'block';
+                setTimeout(() => {
+                    collapsibleContainer.style.maxHeight = '500px'; // Adjust as needed
+                    collapsibleContainer.style.opacity = '1';
+                }, 10); // Slight delay to trigger the transition
+            }
+        });
+
+        // If the attribute "collapsed" is present, collapse the terminal by default.
+        if (terminalDiv.hasAttribute('collapsed')) {
+            isCollapsed = true;
+            triangle.style.transform = 'rotate(90deg)'; // Down-pointing triangle
+            collapsibleContainer.style.maxHeight = '0';
+            collapsibleContainer.style.opacity = '0';
+            collapsibleContainer.style.display = 'none';
+        }
     });
 })()
