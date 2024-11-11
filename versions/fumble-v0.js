@@ -97,6 +97,23 @@
         inputElement.placeholder = "Type here...";
         terminalDiv.appendChild(inputElement);
 
+        // Create argument input field
+        const argumentElement = document.createElement('input');
+        argumentElement.style.cssText = `
+            font-family: monospace;
+            border: 1px solid #ccc;
+            padding: 10px;
+            color: white;
+            background-color: black;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 10px 0;
+            border-radius: 10px;
+            outline: none;
+        `;
+        argumentElement.placeholder = "Arguments...";
+        terminalDiv.appendChild(argumentElement);
+
         // Create output display div
         const outputElement = document.createElement('div');
         outputElement.style.cssText = `
@@ -120,19 +137,25 @@
         const code = terminalDiv.getAttribute('code') || 'P~Hlo Wrld';
         inputElement.value = code;
 
+        // Get the argument from the "args" attribute of the div
+        const args = terminalDiv.getAttribute('args') || '';
+        argumentElement.value = args;
+
         const prompt = `You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
 Remember you only need to return the JavaScript code that can be executed in the browser.
 
 Instructions are characters that indicate actions and context that must be translated into JavaScript code:
 
 - "P" indicates to print something within the context of the code by calling the \`printme\` function.
+- "p" implies that the context has something to do with prime numbers.
+- "x" implies that the context has some sort of repeating pattern or fixed loop.
+- "f" implies that the context should be floored, rounded down, or trimmed based off of the context.
+- "l" implies a list of some kind to be constructed from the context.
+- "@" implies that an argument should be read from the context and used in the code which can be accessed via \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString\`, or \`getArgAsNumber\`.
 - "#" followed by a number or in context of a number means to assign or convert the context as a number.
 - "+" implies something to be added or concatenated in the context.
 - "-" implies something to be subtracted or removed from the context.
 - "$" implies to generate some kind of number sequence or list through context.
-- "p" implies that the context has something to do with prime numbers.
-- "x" implies that the context has some sort of repeating pattern or fixed loop.
-- "@" import a list of some kind to be constructed from the context.
 - "?" implies to check if the context has some kind of condition or boolean value to branch on or resolve to.
 - "~" implies to construct a string of some kind by reading the context and giving it a best guess from the code to be written to the context. This could grab to the end of the code block or to another context beginner like this.
     - \`~Hlo Wrld\` would be translated to \`"Hello World"\`.
@@ -160,6 +183,22 @@ Extra rules:
                 if (n % i === 0 || n % (i + 2) === 0) return false;
             }
             return true;
+        }
+
+        window.getArgs = () => {
+            return args.split(',');
+        }
+
+        window.getArgAt = (n) => {
+            return args.split(',')[n];
+        }
+
+        window.getArgAsString = () => {
+            return args;
+        }
+
+        window.getArgAsNumber = () => {
+            return Number(args);
         }
 
         // Create execute button
