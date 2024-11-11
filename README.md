@@ -13,7 +13,8 @@ print the string 'Hello World'
 </div>
 
 ---
-But, what if you could not write as much?
+
+Why say lot word when little do trick?
 
 <div class="fumble-v0">
 <pre><code>
