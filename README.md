@@ -13,9 +13,9 @@ P~Hlo Wrld
 </div>
 
 The language figures out through its instructions the meaning of what you could be fumbling through.
-<div class="fumble-v0" code="x8@$pP">
+<div class="fumble-v0" code="x8l$pP">
 <pre><code>
-x8@$pP
+x8l$pP
 </code></pre>
 </div>
 
