@@ -63,10 +63,6 @@
     const DEFAULT_TOP_P = 1;
     const DEFAULT_MAX_TOKENS = 4000;
 
-    const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
-        outputElement.innerHTML = text;
-    });
-
     // Find all divs with class "fumble-v0"
     const terminalDivs = document.querySelectorAll('.fumble-v0');
 
@@ -204,6 +200,10 @@ Examples:
 
         // Function to execute the code
         async function executeCode() {
+            const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
+                outputElement.innerHTML = text;
+            });
+
             window.printme = (text) => {
                 outputElement.innerHTML += text;
             }
