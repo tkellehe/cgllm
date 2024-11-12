@@ -1,6 +1,6 @@
 # Fumble
 Code Golfing LLM language called `fumble`. It is powered in the browser through [WebLLM](https://webllm.mlc.ai).
-You can visit the editor [here](https://tkellehe.github.io/editor.html);
+You can visit the editor [here](https://tkellehe.github.io/fumble/editor.html);
 
 
 ---
