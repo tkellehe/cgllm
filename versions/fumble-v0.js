@@ -101,6 +101,7 @@
   - \`$\` & \`l\`: Sequence list construction.
   - \`$\` & \`x\`: Sequence iteration.
   - \`@\` & \`#\`: Argument to number conversion or assignment.
+  - \`$\` & \`+\`: Offset sequence generation.
 
 ### Examples:
 
