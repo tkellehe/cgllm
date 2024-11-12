@@ -1,6 +1,15 @@
 (async () => {
+
+    // A logging function to log messages to the console.
+    const CONSOLE = console;
+
     // Function to initialize and get the engine
-    async function initializeEngine(model, temperature, top_p, max_tokens, onLoadingCallback) {
+    async function initializeEngine(onLoadingCallback) {
+        const model = "Qwen2.5-Coder-7B-Instruct-q4f32_1-MLC";
+        const temperature = 0.1;
+        const top_p = 1;
+        const max_tokens = 4000;
+
         const engineName = `${model}-${temperature}-${top_p}-${max_tokens}`;
         if (window[engineName]) {
             return window[engineName];
@@ -10,7 +19,7 @@
             const webllm = await import("https://esm.run/@mlc-ai/web-llm");
             const engine = new webllm.MLCEngine();
             engine.setInitProgressCallback((report) => {
-                console.log("Initializing:", report.progress);
+                CONSOLE.log("Initializing:", report.progress);
                 if (onLoadingCallback) {
                     onLoadingCallback(report.text);
                 }
@@ -18,11 +27,11 @@
 
             const config = { temperature, top_p, max_tokens };
             await engine.reload(model, config);
-            console.log('Model loaded successfully');
+            CONSOLE.log('Model loaded successfully');
             window[engineName] = engine;
             return engine;
         } catch (error) {
-            console.error('Error loading model:', error);
+            CONSOLE.error('Error loading model:', error);
             return null;
         }
     }
@@ -34,7 +43,7 @@
             { content: userMessage, role: "user" },
         ];
 
-        console.log("Messages:", messages);
+        CONSOLE.log("Messages:", messages);
 
         const chunks = await engine.chat.completions.create({
             messages,
@@ -48,29 +57,23 @@
                 await onSummarizingCallback(chunkContent);
             }
             if (chunk.usage) {
-                console.log("Usage:", chunk.usage);
+                CONSOLE.log("Usage:", chunk.usage);
             }
         }
 
         const fullReply = await engine.getMessage();
-        console.log("Full Reply:", fullReply);
+        CONSOLE.log("Full Reply:", fullReply);
 
         return fullReply;
     }
 
-    const DEFAULT_MODEL = "Qwen2.5-Coder-7B-Instruct-q4f32_1-MLC";
-    // const DEFAULT_MODEL = "Qwen2.5-Coder-1.5B-Instruct-q4f32_1-MLC";
-    const DEFAULT_TEMPERATURE = 0.1;
-    const DEFAULT_TOP_P = 1;
-    const DEFAULT_MAX_TOKENS = 4000;
+    const prompt = `You are an AI assistant that writes JavaScript code. You generate valid JavaScript code by reading the shorthand instructions from the user.
+Remember you only need to return the JavaScript code that can be executed in the browser. No Yapping! Just code!
 
-    const prompt = `You are an AI assistant that writes JavaScript code. You translate input text from the provided instructions below into JavaScript code.
-Remember you only need to return the JavaScript code that can be executed in the browser.
+The shorthand instructions are as follows:
 
-Instructions are characters that indicate actions and context that must be translated into JavaScript code:
-
-- "P" indicates to print something within the context of the code by calling the \`print\` function.
-- "c" indicates to clear the output using the \`clear\` function and potentially resetting or printing something else using the \`print\` function.
+- "P" indicates to print something within the context of the code by using the \`console.log\` function.
+- "c" indicates to clear the output using the \`clear\` function and/or resetting the context.
 - "p" implies that the context has something to do with prime numbers.
 - "x" implies that the context has some sort of repeating pattern or unfolding within the context. Typically used to loop a fixed amount of times.
 - "f" implies that the context should be floored, rounded down, or trimmed based off of the context.
@@ -91,15 +94,14 @@ Instructions are characters that indicate actions and context that must be trans
 - Always preserve order of inferred context from left to right and ensure the code is complete and can be executed in the browser.
 
 Extra rules:
-- If no printing instructions are given in the code, then provide the last context constructed to be the printed using the \`print\` function.
-- If you need to clear the output, you can use the following function \`clear()\`.
-- If you need to check if a number is prime, you can use the following function \`isPrime(n)\` which is already defined.
-- If you need to access the arguments, you can use the following functions:
-- \`getArgs()\` to get all the arguments as an array.
-- \`getArgAt(n)\` to get the argument at index \`n\`.
-- \`getArgAsString()\` to get the arguments as a single string.
-- \`getArgAsNumber()\` to get the arguments as a single number.
-- You can use the global function \`print\` to print text to the output.
+- If no printing instructions are given in the code, then log the output to the console.
+- If you need to clear the output, you can use the already defined global function \`clear()\`.
+- If you need to check if a number is prime, you can use the already defined global function \`isPrime(n)\` which is already defined.
+- If you need to access the arguments, you can use the already defined global functions:
+    - \`getArgs()\` to get all the arguments as an array.
+    - \`getArgAt(n)\` to get the argument at index \`n\`.
+    - \`getArgAsString()\` to get the arguments as a single string.
+    - \`getArgAsNumber()\` to get the arguments as a single number.
 - Always consider the whole context of a program and ensure no code or instructions are left out.
 - Grouping \`p\` and \`?\` within the same context implies part of the program is testing primality.
 - Grouping \`@\` and \`?\` within the same context implies part of the program is checking something with arguments or switching on something with arguments.
@@ -120,9 +122,25 @@ Examples:
 
     // Find all divs with class "fumble-v0"
     const terminalDivs = document.querySelectorAll('.fumble-v0');
+    let idIndex = 0;
+
+    let allQueryParams = {}
+    window.location.search.substr(1).split('&').forEach((item) => {
+        let parts = item.split('=');
+        allQueryParams[parts[0]] = parts[1];
+    });
+    let queryParamGroups = allQueryParams['fumble'];
+    // Fumble is a base64 encoded string of all the fumble parameters mapped by the id of the terminal
+    let fumbleParams = {};
+    try {
+        fumbleParams = queryParamGroups ? JSON.parse(atob(queryParamGroups)) : {};
+    } catch (e) {
+        console.error('Error parsing fumble parameters:', e);
+    }
 
     // Create a terminal in each div
     terminalDivs.forEach(async (terminalDiv) => {
+        // Clear the div
         terminalDiv.innerHTML = '';
         terminalDiv.style.cssText = `
             display: flex;
@@ -134,6 +152,9 @@ Examples:
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             background-color: #2c2c54;
         `;
+
+        // Add its id
+        terminalDiv.id = `fumble-v0-${idIndex++}`;
 
         // Create input field and triangle div
         const inputSectionDiv = document.createElement('div');
@@ -225,13 +246,25 @@ Examples:
         `;
         collapsibleContainer.appendChild(outputElement);
 
+        let queryParams = fumbleParams[terminalDiv.id] || {}
+
         // Get code from the "code" attribute of the div
-        const code = terminalDiv.getAttribute('code') || 'P~Hlo Wrld';
+        const code = queryParams.code || terminalDiv.getAttribute('code') || 'P~Hlo Wrld';
         inputElement.value = code;
 
         // Get the argument from the "args" attribute of the div
-        const args = terminalDiv.getAttribute('args') || '';
+        const args = queryParams.args || terminalDiv.getAttribute('args') || '';
         argumentElement.value = args;
+
+        // Add a container for the buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: flex;
+            flex-direction: row;
+            align-items: left;
+            justify-content: left;
+            width: 100%;
+        `;
 
         // Create execute button
         const executeButton = document.createElement('button');
@@ -246,21 +279,73 @@ Examples:
             cursor: pointer;
             margin-top: 10px;
         `;
-        collapsibleContainer.appendChild(executeButton);
+        buttonContainer.appendChild(executeButton);
+
+        // Create the save button
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = 'Save';
+        saveButton.style.cssText = `
+            font-family: monospace;
+            border: 1px solid white;
+            padding: 10px 20px;
+            color: white;
+            background-color: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-left: 10px;
+        `;
+        buttonContainer.appendChild(saveButton);
+
+        // Create the code button
+        const codeButton = document.createElement('button');
+        codeButton.innerHTML = 'JS';
+        codeButton.style.cssText = `
+            font-family: monospace;
+            border: 1px solid white;
+            padding: 10px 20px;
+            color: white;
+            background-color: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-left: 10px;
+        `;
+        buttonContainer.appendChild(codeButton);
+
+        // Add the button container
+        collapsibleContainer.appendChild(buttonContainer);
 
         // Add the collapsible container to the terminal div
         terminalDiv.appendChild(collapsibleContainer);
+
+        let cleanedOutput = queryParams.cleanedOutput || '';
+        outputElement.innerHTML = queryParams.results || '';
 
         // Function to execute the code
         async function executeCode() {
             const args = argumentElement.value;
 
-            const engine = await initializeEngine(DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_TOKENS, (text) => {
+            const engine = await initializeEngine((text) => {
                 outputElement.innerHTML = text;
             });
 
             window.print = (text) => {
                 outputElement.innerHTML += text;
+            }
+
+            // Put it back for now.
+            window.console = CONSOLE;
+
+            // Override the console to log to the output element.
+            window.console = {
+                log: (...args) => {
+                    outputElement.innerHTML += args.join(' ') + '\n';
+                    CONSOLE.log(...args);
+                },
+                error: CONSOLE.error,
+                warn: CONSOLE.warn,
+                info: CONSOLE.info,
             }
 
             window.clear = () => {
@@ -305,10 +390,10 @@ Examples:
                 outputElement.innerHTML += text;
             });
 
-            console.log("Output:", output);
+            CONSOLE.log("Output:", output);
 
             // Extract JavaScript code from the output
-            const cleanedOutput = output.match(/```(?:(?:javascript)|(?:js))?([\s\S]*?)```/)[1].trim();
+            cleanedOutput = output.match(/```(?:(?:javascript)|(?:js))?([\s\S]*?)```/)[1].trim();
 
             // Clean out the output element.
             outputElement.innerHTML = '';
@@ -319,6 +404,24 @@ Examples:
 
         // Add an event listener to the button.
         executeButton.addEventListener('click', executeCode);
+
+        // Add an event listener to the save button.
+        saveButton.addEventListener('click', () => {
+            const code = inputElement.value;
+            const args = argumentElement.value;
+            const queryParams = { code, args, cleanedOutput, results: outputElement.innerHTML };
+            fumbleParams[terminalDiv.id] = queryParams;
+            const fumbleParamsString = btoa(JSON.stringify(fumbleParams));
+            window.location.search = `?fumble=${fumbleParamsString}`;
+        });
+
+        // Add the code button event listener
+        codeButton.addEventListener('click', () => {
+            let output = outputElement.innerHTML;
+            outputElement.innerHTML = cleanedOutput;
+            cleanedOutput = output;
+            codeButton.innerHTML = codeButton.innerHTML === 'JS' ? 'Results' : 'JS';
+        });
 
         // Toggle visibility of arguments and output elements
         let isCollapsed = false;
