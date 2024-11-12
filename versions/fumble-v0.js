@@ -315,13 +315,22 @@
         let cleanedOutput = queryParams.cleanedOutput || '';
         outputElement.innerHTML = queryParams.results || '';
 
+        let isFumbling = false;
+
         // Function to execute the code
         async function executeCode() {
+            isFumbling = true;
+
             const args = argumentElement.value;
 
             const engine = await initializeEngine((text) => {
                 outputElement.innerHTML = text;
             });
+
+            if (!engine) {
+                isFumbling = false;
+                return;
+            }
 
             window.print = (text) => {
                 outputElement.innerHTML += text;
@@ -383,13 +392,15 @@
                 outputElement.innerHTML += text;
             });
 
+            // Clean out the output element.
+            outputElement.innerHTML = '';
+
+            isFumbling = false;
+
             CONSOLE.log("Output:", output);
 
             // Extract JavaScript code from the output
             cleanedOutput = output.match(/```(?:(?:javascript)|(?:js))?([\s\S]*?)```/)[1].trim();
-
-            // Clean out the output element.
-            outputElement.innerHTML = '';
 
             // Execute the cleaned JavaScript code.
             eval(cleanedOutput);
@@ -400,6 +411,9 @@
 
         // Add an event listener to the save button.
         saveButton.addEventListener('click', () => {
+            if (isFumbling) {
+                return;
+            }
             const code = inputElement.value;
             const args = argumentElement.value;
             const queryParams = { code, args, cleanedOutput, results: outputElement.innerHTML };
@@ -410,6 +424,9 @@
 
         // Add the code button event listener
         codeButton.addEventListener('click', () => {
+            if (isFumbling) {
+                return;
+            }
             let output = outputElement.innerHTML;
             outputElement.innerHTML = cleanedOutput;
             cleanedOutput = output;
