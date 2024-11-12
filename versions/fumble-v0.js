@@ -111,8 +111,8 @@
 - \`@0+~ thx\`: Print first argument + \`" thanks"\`.
 - \`#4-(@#)P\`: Subtract argument from 4 and print.
 - \`@+~6\`: Print argument + \`"six"\`.
-- \`x10$FlP\`: Print the first 10 Fibonacci numbers.
-- \`p$lx20\`: Print the first 20 prime numbers.
+- \`x10$FlP\`: Print the list of the first 10 Fibonacci numbers.
+- \`p$+4lx20\`: Print the list of the first 20 prime numbers starting from the 5th prime number.
 `;
 
     // Find all divs with class "fumble-v0"
