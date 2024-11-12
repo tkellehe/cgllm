@@ -91,7 +91,7 @@
 
 ### Extra Rules:
 
-- Default print if no explicit print is specified.
+- Assume to print with \`console.log\` if no explicit print is specified.
 - Use predefined functions: \`clear()\`, \`isPrime(n)\`, \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString()\`, and \`getArgAsNumber()\`.
 - Maintain context order from left to right.
 - Grouping hints:
