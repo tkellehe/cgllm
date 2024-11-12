@@ -4,7 +4,7 @@ You can visit the editor [here](https://tkellehe.github.io/fumble/editor.html).
 
 ---
 
-To learn more about how to fumble, you can read the prompt yourself just like the LLM [here]().
+To learn more about how to fumble, you can read the prompt yourself just like the LLM [here](https://github.com/tkellehe/fumble/blob/bb682dffc82504bd85a5e388dadfc58b0a9a0906/versions/fumble-v0.js#L70).
 
 ---
 
