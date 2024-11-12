@@ -2,6 +2,9 @@
 Code Golfing LLM language called `fumble`. It is powered in the browser through [WebLLM](https://webllm.mlc.ai).
 You can visit the editor [here](https://tkellehe.github.io/fumble/editor.html).
 
+---
+
+To learn more about how to fumble, you can read the prompt yourself just like the LLM [here]().
 
 ---
 
