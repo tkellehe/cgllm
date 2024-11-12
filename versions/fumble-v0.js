@@ -71,10 +71,11 @@
 
 ### Shorthand Guide:
 
+- \`p\`: Relates to prime numbers (may need \`isPrime(n)\`).
+- \`F\`: Relates to Fibonacci, Lucas or second-order linear recurrence relation sequences (may need \`lucasSequence(n, P, Q, U0, U1)\`).
+- \`s\`: Relates to square or power sequences.
 - \`P\`: Print using \`console.log\`.
 - \`c\`: Clear output with \`clear()\` and reset context.
-- \`p\`: Relates to prime numbers.
-- \`F\`: Relates to Fibonacci or recursive additive sequences.
 - \`x\`: Denotes a repeating pattern, typically loops.
 - \`f\`: Floor, round down, or trim based on context.
 - \`l\`: Indicates a list context.
@@ -92,7 +93,7 @@
 ### Extra Rules:
 
 - Assume to print with \`console.log\` if no explicit print is specified.
-- Use predefined functions: \`clear()\`, \`isPrime(n)\`, \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString()\`, and \`getArgAsNumber()\`.
+- Use predefined functions and do not implement: \`lucasSequence(n, P, Q, U0, U1)\`, \`clear()\`, \`isPrime(n)\`, \`getArgs()\`, \`getArgAt(n)\`, \`getArgAsString()\`, and \`getArgAsNumber()\`.
 - Maintain context order from left to right.
 - Grouping hints:
   - \`p\` & \`?\`: Testing primality.
@@ -105,15 +106,15 @@
 
 ### Examples:
 
-- \`Plx100$p\`: Print the list of the first 100 prime numbers.
+- \`Plx100$p\`: Print the list of the first 100 prime numbers (may need predefined \`isPrime(n)\`).
 - \`#@+4\`: Add argument to 4, then print.
 - \`~Hdy '@'!\`: Print \`"Howdy '...'!"\` where \`'...'\` is arguments as a string.
 - \`p$5\`: Print the 5th prime number.
 - \`@0+~ thx\`: Print first argument + \`" thanks"\`.
 - \`#4-(@#)P\`: Subtract argument from 4 and print.
 - \`@+~6\`: Print argument + \`"six"\`.
-- \`x10$FlP\`: Print the list of the first 10 Fibonacci numbers.
-- \`p$+4lx20\`: Print the list of the first 20 prime numbers starting from the 5th prime number.
+- \`x10$FlP\`: Print a list of the first 10 Fibonacci numbers.
+- \`p$+4lx20\`: Print a list of 20 prime numbers after the 4th prime number (may need predefined \`isPrime(n)\`).
 `;
 
     // Find all divs with class "fumble-v0"
@@ -358,6 +359,19 @@
 
             window.clear = () => {
                 outputElement.innerHTML = '';
+            }
+
+            window.lucasSequence = (n, P, Q, U0, U1) => {
+                if (n === 0) return U0;
+                if (n === 1) return U1;
+
+                let a = U0, b = U1, temp;
+                for (let i = 2; i <= n; i++) {
+                    temp = P * b - Q * a;
+                    a = b;
+                    b = temp;
+                }
+                return b;
             }
     
             window.isPrime = (n) => {
