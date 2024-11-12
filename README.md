@@ -27,9 +27,9 @@ P~Hlo Wrld
 
 The language figures out through its instructions the meaning of what you could be fumbling through.
 
-<div class="fumble-v0" code="x8l$pP" collapsed>
+<div class="fumble-v0" code="x8lp$P" collapsed>
 <pre><code>
-x8l$pP
+x8lp$P
 </code></pre>
 </div>
 
