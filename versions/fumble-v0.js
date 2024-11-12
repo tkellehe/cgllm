@@ -319,6 +319,9 @@
 
         // Function to execute the code
         async function executeCode() {
+            if (isFumbling) {
+                return;
+            }
             isFumbling = true;
 
             const args = argumentElement.value;
